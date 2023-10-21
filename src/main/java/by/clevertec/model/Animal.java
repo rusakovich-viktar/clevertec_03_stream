@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class Animal {
 
     private int id;
-    private String bread;
+    private String breed;
     private int age;
     private String origin;
     private String gender;

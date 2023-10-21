@@ -8,13 +8,15 @@ import by.clevertec.model.House;
 import by.clevertec.model.Person;
 import by.clevertec.model.Student;
 import by.clevertec.util.Util;
-
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Main {
 
     public static void main(String[] args) {
-        task1();
+//        task1();
         task2();
         task3();
         task4();
@@ -40,12 +42,41 @@ public class Main {
 
     public static void task1() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .filter(animal -> animal.getAge() >= 10 && animal.getAge() <= 20)
+                .sorted(Comparator.comparingInt(Animal::getAge))
+                .collect(Collectors.collectingAndThen(Collectors.toList(),
+                        filteredAndSortedAnimals -> IntStream.range(0, filteredAndSortedAnimals.size())
+                                .boxed()
+                                .collect(Collectors.groupingBy(index -> index / 7))
+                                .values()
+                                .stream()
+                                .map(indices -> indices
+                                        .stream()
+                                        .map(filteredAndSortedAnimals::get)
+                                        .collect(Collectors.toList()))
+                                .collect(Collectors.toList())
+                ))
+                .get(2)
+                .forEach(animal -> {
+                    System.out.println("ID: " + animal.getId() + ", Возраст: " + animal.getAge());
+                });
     }
 
     public static void task2() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .filter(animal -> "Japanese".equals(animal.getOrigin()))
+                .map(animal -> {
+                    if ("Female".equals(animal.getGender())) {
+                        return animal.getBreed().toUpperCase();
+                    } else {
+                        return animal.getBreed();
+                    }
+                })
+                .forEach(System.out::println);
     }
 
     public static void task3() {

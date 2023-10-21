@@ -10,6 +10,8 @@ import by.clevertec.model.Student;
 import by.clevertec.util.Util;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,12 +23,12 @@ public class Main {
 //        task3();
 //        task4();
 //        task5();
-        task6();
-        task7();
-        task8();
-        task9();
-        task10();
-        task11();
+//        task6();
+//        task7();
+//        task8();
+//        task9();
+//        task10();
+//        task11();
         task12();
         task13();
         task14();
@@ -117,32 +119,73 @@ public class Main {
 
     public static void task6() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        System.out.println(
+                animals.stream()
+                        .allMatch(animal -> "Male".equals(animal.getGender()) || "Female".equals(animal.getGender())) ?
+                        "Все животные имеют пол Male или Female" : "Есть животные с другим гендером"
+        );
     }
 
     public static void task7() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+        System.out.println(
+                animals.stream()
+                        .noneMatch(animal -> "Oceania".equals(animal.getOrigin())) ?
+                        "Ни одно животное не имеет страну происхождения Oceania" : "Есть животные из Oceania"
+        );
     }
 
     public static void task8() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .sorted(Comparator.comparing(Animal::getBreed))
+                .limit(100)
+                .max(Comparator.comparingInt(Animal::getAge))
+                .ifPresent(oldestAnimal -> System.out.println("Возраст самого старого животного среди первых 100: " + oldestAnimal.getAge()));
+
     }
 
     public static void task9() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .map(Animal::getBreed)
+                .map(String::toCharArray)
+                .mapToInt(arr -> arr.length)
+                .min()
+                .ifPresent(shortestArrayLength ->
+                        System.out.println("Длина самого короткого массива: " + shortestArrayLength)
+                );
     }
 
     public static void task10() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+        Optional<Integer> totalAge = animals.stream()
+                .map(Animal::getAge)
+                .reduce(Integer::sum);
+        totalAge.ifPresent(age -> System.out.println("Суммарный возраст всех животных: " + age));
+//+++++++++++++++++++++++++++++++++++
+        System.out.println("Суммарный возраст всех животных: " +
+                animals.stream()
+                        .mapToInt(Animal::getAge)
+                        .sum());
+
     }
+
 
     public static void task11() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .filter(animal -> "Indonesian".equals(animal.getOrigin()))
+                .mapToInt(Animal::getAge)
+                .average()
+                .ifPresentOrElse(
+                        averageAge -> System.out.println("Средний возраст всех животных из Индонезии: " + averageAge),
+                        () -> System.out.println("Нет животных из Индонезии.")
+                );
     }
 
     public static void task12() {

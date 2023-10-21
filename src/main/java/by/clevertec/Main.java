@@ -17,10 +17,10 @@ public class Main {
 
     public static void main(String[] args) {
 //        task1();
-        task2();
-        task3();
-        task4();
-        task5();
+//        task2();
+//        task3();
+//        task4();
+//        task5();
         task6();
         task7();
         task8();
@@ -81,17 +81,38 @@ public class Main {
 
     public static void task3() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .filter(animal -> animal.getAge() > 30)
+                .map(Animal::getOrigin)
+                .filter(country -> country.startsWith("A"))
+                .distinct()
+                .forEach(System.out::println);
     }
 
     public static void task4() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+//        long countFemaleAnimals = animals.stream()
+//                .filter(animal -> "Female".equals(animal.getGender()))
+//                .count();
+//
+//        System.out.println("Количество животных с полом Female: " + countFemaleAnimals);
+
+        System.out.println(animals.stream()
+                .filter(animal -> "Female".equals(animal.getGender()))
+                .mapToLong(animal -> 1)
+                .sum());
     }
 
     public static void task5() {
         List<Animal> animals = Util.getAnimals();
-//        animals.stream() Продолжить ...
+
+        animals.stream()
+                .filter(animal -> animal.getAge() >= 20 && animal.getAge() <= 30)
+                .map(animal -> "Hungarian".equals(animal.getOrigin()))
+                .reduce((result1, result2) -> result1 || result2)
+                .ifPresent(System.out::println);
     }
 
     public static void task6() {

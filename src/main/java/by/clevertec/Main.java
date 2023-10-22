@@ -8,12 +8,16 @@ import by.clevertec.model.House;
 import by.clevertec.model.Person;
 import by.clevertec.model.Student;
 import by.clevertec.util.Util;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -29,7 +33,7 @@ public class Main {
 //        task9();
 //        task10();
 //        task11();
-        task12();
+//        task12();
         task13();
         task14();
         task15();
@@ -190,12 +194,40 @@ public class Main {
 
     public static void task12() {
         List<Person> persons = Util.getPersons();
-//        persons.stream() Продолжить ...
+        persons.stream()
+                .filter(person -> "Male".equals(person.getGender()) && person.getDateOfBirth().isAfter(LocalDate.now().minusYears(27)) && person.getDateOfBirth().isBefore(LocalDate.now().minusYears(18)))
+                .sorted(Comparator.comparingInt(Person::getRecruitmentGroup))
+                .limit(200)
+                .forEach(System.out::println);
     }
 
     public static void task13() {
         List<House> houses = Util.getHouses();
-//        houses.stream() Продолжить ...
+////        houses.stream() Продолжить ...
+        List<Person> evacuationList = houses.stream()
+                .flatMap(house -> {
+                    Stream<Person> hospitalPatients = "Hospital".equals(house.getBuildingType()) ?
+                            house.getPersonList().stream() :
+                            Stream.empty();
+
+                    Stream<Person> childrenAndElderly = "Hospital".equals(house.getBuildingType()) ?
+                            Stream.empty() :
+                            house.getPersonList().stream()
+                                    .filter(person -> {
+                                        LocalDate currentDate = LocalDate.now();
+                                        LocalDate birthDate = person.getDateOfBirth();
+                                        int age = Period.between(birthDate, currentDate).getYears();
+                                        return age < 18 || age > 60;
+                                    });
+
+                    return Stream.concat(hospitalPatients, childrenAndElderly);
+                })
+                .collect(Collectors.toList());
+        //TODO ДОБАВИТЬ ЭВАКУАЦИЮ ОСТАЛЬНЫХ
+
+                evacuationList.forEach(person -> System.out.println(person.getId() + " " + person.getDateOfBirth() + " " + person.getFirstName() + " " + person.getLastName()));
+
+
     }
 
     public static void task14() {

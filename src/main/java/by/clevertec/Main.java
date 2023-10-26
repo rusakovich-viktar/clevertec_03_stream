@@ -1,5 +1,21 @@
 package by.clevertec;
 
+import static by.clevertec.util.ConstantsAndMagicWords.BUILDING_TYPE_HOSPITAL;
+import static by.clevertec.util.ConstantsAndMagicWords.COSTS_PER_TON_OF_VEHICLE;
+import static by.clevertec.util.ConstantsAndMagicWords.Flower.COST_PER_CUBIC_METER;
+import static by.clevertec.util.ConstantsAndMagicWords.Flower.NUMBER_OF_DAYS_IN_A_YEAR;
+import static by.clevertec.util.ConstantsAndMagicWords.Flower.YEARS_FIVE;
+import static by.clevertec.util.ConstantsAndMagicWords.Person.AGE_18;
+import static by.clevertec.util.ConstantsAndMagicWords.Person.AGE_27;
+import static by.clevertec.util.ConstantsAndMagicWords.Person.AGE_60;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.AGE_10;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.AGE_20;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.AGE_30;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.GENDER_FEMALE;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.GENDER_MALE;
+import static by.clevertec.util.ConstantsAndMagicWords.Zoo.NUMBER_OF_ANIMALS_PER_ZOO;
+import static by.clevertec.util.Task13Util.getAgeBetweenDate;
+
 import by.clevertec.model.Animal;
 import by.clevertec.model.Car;
 import by.clevertec.model.Examination;
@@ -7,13 +23,15 @@ import by.clevertec.model.Flower;
 import by.clevertec.model.House;
 import by.clevertec.model.Person;
 import by.clevertec.model.Student;
+import by.clevertec.util.Task14Util;
+import by.clevertec.util.Task15Util;
 import by.clevertec.util.Util;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.Period;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -21,40 +39,40 @@ import java.util.stream.Stream;
 public class Main {
 
     public static void main(String[] args) {
-//        task1();
-//        task2();
-//        task3();
-//        task4();
-//        task5();
-//        task6();
-//        task7();
-//        task8();
-//        task9();
-//        task10();
-//        task11();
-//        task12();
-//        task13();
+        task1();
+        task2();
+        task3();
+        task4();
+        task5();
+        task6();
+        task7();
+        task8();
+        task9();
+        task10();
+        task11();
+        task12();
+        task13();
         task14();
-//        task15();
-//        task16();
-//        task17();
-//        task18();
-//        task19();
-//        task20();
-//        task21();
-//        task22();
+        task15();
+        task16();
+        task17();
+        task18();
+        task19();
+        task20();
+        task21();
+        task22();
     }
 
     public static void task1() {
         List<Animal> animals = Util.getAnimals();
 
         animals.stream()
-                .filter(animal -> animal.getAge() >= 10 && animal.getAge() <= 20)
+                .filter(animal -> animal.getAge() >= AGE_10 && animal.getAge() <= AGE_20)
                 .sorted(Comparator.comparingInt(Animal::getAge))
                 .collect(Collectors.collectingAndThen(Collectors.toList(),
                         filteredAndSortedAnimals -> IntStream.range(0, filteredAndSortedAnimals.size())
                                 .boxed()
-                                .collect(Collectors.groupingBy(index -> index / 7))
+                                .collect(Collectors.groupingBy(index -> index / NUMBER_OF_ANIMALS_PER_ZOO))
                                 .values()
                                 .stream()
                                 .map(indices -> indices
@@ -73,14 +91,8 @@ public class Main {
         List<Animal> animals = Util.getAnimals();
 
         animals.stream()
-                .filter(animal -> "Japanese".equals(animal.getOrigin()))
-                .map(animal -> {
-                    if ("Female".equals(animal.getGender())) {
-                        return animal.getBreed().toUpperCase();
-                    } else {
-                        return animal.getBreed();
-                    }
-                })
+                .filter(animal -> animal.getOrigin().equals("Japanese") && animal.getGender().equals(GENDER_FEMALE))
+                .map(animal -> animal.getBreed().toUpperCase())
                 .forEach(System.out::println);
     }
 
@@ -99,22 +111,18 @@ public class Main {
         List<Animal> animals = Util.getAnimals();
 
         long countFemaleAnimals = animals.stream()
-                .filter(animal -> "Female".equals(animal.getGender()))
+                .filter(animal -> GENDER_FEMALE.equals(animal.getGender()))
                 .count();
 
         System.out.println("Количество животных с полом Female: " + countFemaleAnimals);
 
-//        System.out.println(animals.stream()
-//                .filter(animal -> "Female".equals(animal.getGender()))
-//                .mapToLong(animal -> 1)
-//                .sum());
     }
 
     public static void task5() {
         List<Animal> animals = Util.getAnimals();
 
         animals.stream()
-                .filter(animal -> animal.getAge() >= 20 && animal.getAge() <= 30)
+                .filter(animal -> animal.getAge() >= AGE_20 && animal.getAge() <= AGE_30)
                 .map(animal -> "Hungarian".equals(animal.getOrigin()))
                 .reduce((result1, result2) -> result1 || result2)
                 .ifPresent(System.out::println);
@@ -125,8 +133,8 @@ public class Main {
 
         System.out.println(
                 animals.stream()
-                        .allMatch(animal -> "Male".equals(animal.getGender()) || "Female".equals(animal.getGender())) ?
-                        "Все животные имеют пол Male или Female" : "Есть животные с другим гендером"
+                        .allMatch(animal -> GENDER_MALE.equals(animal.getGender()) || GENDER_FEMALE.equals(animal.getGender()))
+                        ? "Все животные имеют пол Male или Female" : "Есть животные с другим гендером"
         );
     }
 
@@ -134,8 +142,8 @@ public class Main {
         List<Animal> animals = Util.getAnimals();
         System.out.println(
                 animals.stream()
-                        .noneMatch(animal -> "Oceania".equals(animal.getOrigin())) ?
-                        "Ни одно животное не имеет страну происхождения Oceania" : "Есть животные из Oceania"
+                        .noneMatch(animal -> "Oceania".equals(animal.getOrigin()))
+                        ? "Нет животных из Oceania" : "Есть животные из Oceania"
         );
     }
 
@@ -166,10 +174,10 @@ public class Main {
     public static void task10() {
         List<Animal> animals = Util.getAnimals();
 
-        System.out.println("Суммарный возраст всех животных: " +
-                animals.stream()
-                        .mapToInt(Animal::getAge)
-                        .sum());
+        System.out.println("Суммарный возраст всех животных: "
+                + animals.stream()
+                .mapToInt(Animal::getAge)
+                .sum());
 
     }
 
@@ -189,8 +197,8 @@ public class Main {
     public static void task12() {
         List<Person> persons = Util.getPersons();
         persons.stream()
-                .filter(person -> "Male".equals(person.getGender()) && person.getDateOfBirth().isAfter(LocalDate.now().minusYears(27))
-                        && person.getDateOfBirth().isBefore(LocalDate.now().minusYears(18)))
+                .filter(person -> GENDER_MALE.equals(person.getGender()) && person.getDateOfBirth().isAfter(LocalDate.now().minusYears(AGE_27))
+                        && person.getDateOfBirth().isBefore(LocalDate.now().minusYears(AGE_18)))
                 .sorted(Comparator.comparingInt(Person::getRecruitmentGroup))
                 .limit(200)
                 .forEach(System.out::println);
@@ -201,260 +209,176 @@ public class Main {
 
         List<Person> evacuationList = houses.stream()
                 .flatMap(house -> {
-                    Stream<Person> hospitalPatients = "Hospital".equals(house.getBuildingType()) ?
-                            house.getPersonList().stream() :
-                            Stream.empty();
+                    Stream<Person> hospitalPatients = BUILDING_TYPE_HOSPITAL.equals(house.getBuildingType())
+                            ? house.getPersonList().stream()
+                            : Stream.empty();
 
-                    Stream<Person> childrenAndElderly = "Hospital".equals(house.getBuildingType()) ?
-                            Stream.empty() :
-                            house.getPersonList().stream()
-                                    .filter(person -> {
-                                        LocalDate currentDate = LocalDate.now();
-                                        LocalDate birthDate = person.getDateOfBirth();
-                                        int age = Period.between(birthDate, currentDate).getYears();
-                                        return age < 18 || age > 60;
-                                    });
+                    Stream<Person> childrenAndElderly = BUILDING_TYPE_HOSPITAL.equals(house.getBuildingType())
+                            ? Stream.empty()
+                            : house.getPersonList().stream()
+                            .filter(person -> {
+                                int age = getAgeBetweenDate(person);
+                                return age < AGE_18 || age > AGE_60;
+                            });
 
-                    Stream<Person> remainingPeople = "Hospital".equals(house.getBuildingType()) ?
-                            Stream.empty() :
-                            house.getPersonList().stream()
-                                    .filter(person -> {
-                                        LocalDate currentDate = LocalDate.now();
-                                        LocalDate birthDate = person.getDateOfBirth();
-                                        int age = Period.between(birthDate, currentDate).getYears();
-                                        return age >= 18 && age <= 60;
-                                    });
+                    Stream<Person> remainingPeople = !BUILDING_TYPE_HOSPITAL.equals(house.getBuildingType())
+                            ? house.getPersonList().stream()
+                            .filter(person -> {
+                                int age = getAgeBetweenDate(person);
+                                return age >= AGE_18 && age <= AGE_60;
+                            }) : Stream.empty();
 
-                    return Stream.of(hospitalPatients, childrenAndElderly);
-                    //TODO STRANGE BEHAVIOR STREAM OF TURN ON THIRD ARGUMENT
+                    return Stream.of(hospitalPatients, childrenAndElderly, remainingPeople
+                    );
                 })
                 .reduce(Stream::concat)
                 .orElseGet(Stream::empty)
                 .limit(500)
-                .peek(person -> {
-                    System.out.println(person.getId() + " " + person.getDateOfBirth() + " " + person.getFirstName() + " " + person.getLastName());
-                })
                 .toList();
 
+        evacuationList
+                .forEach(person -> {
+                    System.out.println(person.getId() + " " + person.getDateOfBirth() + " " + person.getFirstName() + " " + person.getLastName());
+                });
     }
 
     public static void task14() {
         List<Car> cars = Util.getCars();
-
-        Map<String, Double> countryMassSum = cars.stream()
-                .filter(car -> {
-                    String destinationCountry = null; // Страна по умолчанию
-                    if ("Jaguar".equals(car.getCarMake()) || "White".equals(car.getColor())) {
-                        destinationCountry = "Туркменистан";
-                    } else if (car.getMass() <= 1500 ||
-                            Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car.getCarMake())) {
-                        destinationCountry = "Узбекистан";
-                    } else if (("Black".equals(car.getColor()) && car.getMass() > 4000) ||
-                            Arrays.asList("GMC", "Dodge").contains(car.getCarMake())) {
-                        destinationCountry = "Казахстан";
-                    } else if ((car.getReleaseYear() < 1982) ||
-                            Arrays.asList("Civic", "Cherokee").contains(car.getCarModel())) {
-                        destinationCountry = "Кыргызстан";
-                    } else if (!Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car.getColor()) ||
-                            car.getPrice() > 40000) {
-                        destinationCountry = "Россия";
-                    } else if (car.getVin().contains("59")) {
-                        destinationCountry = "Монголия";
-                    }
-                    return destinationCountry != null;
-                })
-                .collect(Collectors.groupingBy(
-                        car -> {
-                            String destinationCountry = null; // Страна по умолчанию
-                            if ("Jaguar".equals(car.getCarMake()) || "White".equals(car.getColor())) {
-                                destinationCountry = "Туркменистан";
-                            } else if (car.getMass() <= 1500 ||
-                                    Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car.getCarMake())) {
-                                destinationCountry = "Узбекистан";
-                            } else if (("Black".equals(car.getColor()) && car.getMass() > 4000) ||
-                                    Arrays.asList("GMC", "Dodge").contains(car.getCarMake())) {
-                                destinationCountry = "Казахстан";
-                            } else if ((car.getReleaseYear() < 1982) ||
-                                    Arrays.asList("Civic", "Cherokee").contains(car.getCarModel())) {
-                                destinationCountry = "Кыргызстан";
-                            } else if (!Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car.getColor()) ||
-                                    car.getPrice() > 40000) {
-                                destinationCountry = "Россия";
-                            } else if (car.getVin().contains("59")) {
-                                destinationCountry = "Монголия";
-                            }
-                            return destinationCountry;
-                        },
-                        Collectors.summingDouble(car -> car.getMass() / 1000.0 * 7.14)
-                ));
-
-        countryMassSum.forEach((country, totalCost) -> {
-            System.out.println("Страна: " + country);
-            System.out.println("Суммарная стоимость транспортных расходов: $" + totalCost);
-        });
+        AtomicReference<Double> totalPrice = new AtomicReference<>((double) 0);
+        cars.stream()
+                .collect(Collectors.groupingBy(Task14Util::getKey)).values().stream()
+                .limit(6)
+                .forEach(list -> {
+                    System.out.println("Транспортные расходы: " + new DecimalFormat("#.#").format(COSTS_PER_TON_OF_VEHICLE * list.stream()
+                            .mapToLong(Car::getMass)
+                            .sum()));
+                    totalPrice.updateAndGet(value -> value + list.stream()
+                            .mapToDouble(Car::getPrice)
+                            .sum() - COSTS_PER_TON_OF_VEHICLE * list.stream()
+                            .mapToDouble(Car::getMass)
+                            .sum());
+                });
+        System.out.println("Общая выручка логистической кампании: " + new DecimalFormat("#.#").format(totalPrice.get()));
     }
-//}
-
-//        Map<Car, String> carToCountry = new HashMap<>();
-//
-//
-//        List<Car> sortedCars = cars.stream()
-//                .filter(car -> {
-//                            String destinationCountry = null; // Страна по умолчанию
-//                            if ("Jaguar".equals(car.getCarMake()) || "White".equals(car.getColor())) {
-//                                destinationCountry = "Туркменистан";
-//                            } else if (car.getMass() <= 1500 ||
-//                                    Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car.getCarMake())) {
-//                                destinationCountry = "Узбекистан";
-//                            } else if (("Black".equals(car.getColor()) && car.getMass() > 4000) ||
-//                                    Arrays.asList("GMC", "Dodge").contains(car.getCarMake())) {
-//                                destinationCountry = "Казахстан";
-//                            } else if ((car.getReleaseYear() < 1982) ||
-//                            Arrays.asList("Civic", "Cherokee").contains(car.getCarModel())) {
-//                                destinationCountry = "Кыргызстан";
-//                            } else if (!Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car.getColor()) ||
-//                            car.getPrice() > 40000) {
-//                                destinationCountry = "Россия";
-//                            } else if (car.getVin().contains("59")) {
-//                                destinationCountry = "Монголия";
-//                            }
-//                            return destinationCountry != null;
-////                            carToCountry.put(car, destinationCountry);
-////                            return true;
-//
-////                    boolean priority1 = ("Jaguar".equals(car.getCarMake()) || "White".equals(car.getColor()));
-////                    boolean priority2 = (car.getMass() <= 1500 ||
-////                            Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car.getCarMake()));
-////                    boolean priority3 = ("Black".equals(car.getColor()) && car.getMass() > 4000) ||
-////                            Arrays.asList("GMC", "Dodge").contains(car.getCarMake());
-////                    boolean priority4 = (car.getReleaseYear() < 1982) ||
-////                            Arrays.asList("Civic", "Cherokee").contains(car.getCarModel());
-////                    boolean priority5 = !Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car.getColor()) ||
-////                            car.getPrice() > 40000;
-////                    boolean priority6 = car.getVin().contains("59");
-//
-////                    return priority1 || priority2 || priority3 || priority4 || priority5 || priority6;
-//
-//                        }
-//                )
-//                .sorted((car1, car2) -> {
-//                    boolean car1IsPriority1 = ("Jaguar".equals(car1.getCarMake()) || "White".equals(car1.getColor()));
-//                    boolean car2IsPriority1 = ("Jaguar".equals(car2.getCarMake()) || "White".equals(car2.getColor()));
-//
-//                    if (car1IsPriority1 && !car2IsPriority1) {
-//                        return -1;
-//                    } else if (!car1IsPriority1 && car2IsPriority1) {
-//                        return 1;
-//                    }
-//
-//                    boolean car1IsPriority2 = (car1.getMass() <= 1500 ||
-//                            Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car1.getCarMake()));
-//                    boolean car2IsPriority2 = (car2.getMass() <= 1500 ||
-//                            Arrays.asList("BMW", "Lexus", "Chrysler", "Toyota").contains(car2.getCarMake()));
-//
-//                    if (car1IsPriority2 && !car2IsPriority2) {
-//                        return -1;
-//                    } else if (!car1IsPriority2 && car2IsPriority2) {
-//                        return 1;
-//                    }
-//
-//                    boolean car1IsPriority3 = ("Black".equals(car1.getColor()) && car1.getMass() > 4000) ||
-//                            Arrays.asList("GMC", "Dodge").contains(car1.getCarMake());
-//                    boolean car2IsPriority3 = ("Black".equals(car2.getColor()) && car2.getMass() > 4000) ||
-//                            Arrays.asList("GMC", "Dodge").contains(car2.getCarMake());
-//
-//
-//                    if (car1IsPriority3 && !car2IsPriority3) {
-//                        return -1;
-//                    } else if (!car1IsPriority3 && car2IsPriority3) {
-//                        return 1;
-//                    }
-//
-//                    boolean car1IsPriority4 = (car1.getReleaseYear() < 1982) ||
-//                            Arrays.asList("Civic", "Cherokee").contains(car1.getCarModel());
-//                    boolean car2IsPriority4 = (car2.getReleaseYear() < 1982) ||
-//                            Arrays.asList("Civic", "Cherokee").contains(car2.getCarModel());
-//
-//                    if (car1IsPriority4 && !car2IsPriority4) {
-//                        return -1;
-//                    } else if (!car1IsPriority4 && car2IsPriority4) {
-//                        return 1;
-//                    }
-////
-//                    boolean car1IsPriority5 = !Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car1.getColor()) ||
-//                            car1.getPrice() > 40000;
-//                    boolean car2IsPriority5 = !Arrays.asList("Yellow", "Red", "Green", "Blue").contains(car2.getColor()) ||
-//                            car2.getPrice() > 40000;
-//
-//                    if (car1IsPriority5 && !car2IsPriority5) {
-//                        return -1;
-//                    } else if (!car1IsPriority5 && car2IsPriority5) {
-//                        return 1;
-//                    }
-//
-//                    boolean car1IsPriority6 = car1.getVin().contains("59");
-//                    boolean car2IsPriority6 = car2.getVin().contains("59");
-//
-//                    if (car1IsPriority6 && !car2IsPriority6) {
-//                        return -1;
-//                    } else if (!car1IsPriority6 && car2IsPriority6) {
-//                        return 1;
-//                    }
-//
-//                    return 0;
-//                })
-//                .peek(car -> {
-//                    System.out.println("ID: " + car.getId());
-//                    System.out.println("VIN: " + car.getVin());
-//                    System.out.println("Make: " + car.getCarMake());
-//                    System.out.println("Model: " + car.getCarModel());
-//                    System.out.println("Release Year: " + car.getReleaseYear());
-//                    System.out.println("Color: " + car.getColor());
-//                    System.out.println("Mass: " + car.getMass() + " kg");
-//                    System.out.println("Price: $" + car.getPrice());
-//                    System.out.println();
-//                })
-//                .toList();
-//    }
 
     public static void task15() {
         List<Flower> flowers = Util.getFlowers();
-//        flowers.stream() Продолжить ...
+
+        double totalCost = flowers.stream()
+                .filter(Task15Util::isFlowerInRangeAndPreferred)
+                .sorted(Comparator.comparing(Flower::getOrigin)
+                        .reversed()
+                        .thenComparing(Comparator.comparing(Flower::getPrice).reversed())
+                        .thenComparing(Comparator.comparingDouble(Flower::getWaterConsumptionPerDay).reversed()))
+                .mapToDouble(flower -> {
+                    double waterCost = flower.getWaterConsumptionPerDay() * NUMBER_OF_DAYS_IN_A_YEAR * YEARS_FIVE * COST_PER_CUBIC_METER;
+                    double flowerCost = flower.getPrice();
+                    System.out.printf("%s : Flower Cost = %.2f and Water Cost = %.2f \n", flower.getCommonName(), flowerCost, waterCost);
+                    return waterCost + flowerCost;
+                })
+                .sum();
+
+        System.out.println("\nОбщая стоимость обслуживания всех растений: " + totalCost + " $");
     }
 
     public static void task16() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+
+        students.stream()
+                .filter(student -> student.getAge() < AGE_18)
+                .sorted(Comparator.comparing(Student::getSurname))
+                .forEach(student -> System.out.println(student.getSurname() + " (" + student.getAge() + " years old)"));
     }
 
     public static void task17() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+
+        students.stream()
+                .map(Student::getGroup)
+                .distinct()
+                .peek(System.out::println)
+                .toList();
     }
 
     public static void task18() {
         List<Student> students = Util.getStudents();
-        List<Examination> examinations = Util.getExaminations();
-//        students.stream() Продолжить ...
+
+        students.stream()
+                .collect(Collectors.groupingBy(
+                        Student::getFaculty,
+                        Collectors.averagingInt(Student::getAge)
+                ))
+                .entrySet()
+                .stream()
+                .sorted((entry1, entry2) -> Double.compare(entry2.getValue(), entry1.getValue()))
+                .forEach(entry -> System.out.printf("%s : %.2f\n", entry.getKey(), entry.getValue()));
     }
 
     public static void task19() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        List<Examination> examinations = Util.getExaminations();
+
+        String targetGroup = "C-3";
+
+        students.stream()
+                .filter(student -> student.getGroup().equals(targetGroup))
+                .flatMap(student -> {
+                    List<Examination> studentExams = examinations.stream()
+                            .filter(exam -> exam.getStudentId() == student.getId())
+                            .toList();
+                    return !studentExams.isEmpty() && studentExams.stream()
+                            .allMatch(exam -> exam.getExam1() > 4 && exam.getExam2() > 4 && exam.getExam3() > 4)
+                            ? Stream.of(student)
+                            : Stream.empty();
+                })
+                .peek(student -> System.out.println("Студент с успешными экзаменами: " + student))
+                .toList();
     }
 
     public static void task20() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+        List<Examination> examinations = Util.getExaminations();
+
+        students.stream()
+                .collect(Collectors.groupingBy(
+                        Student::getFaculty,
+                        Collectors.averagingDouble(student -> examinations.stream()
+                                .filter(exam -> exam.getStudentId() == student.getId())
+                                .mapToDouble(Examination::getExam1)
+                                .findFirst()
+                                .orElse(0.0)
+                        )
+                ))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .ifPresent(entry -> System.out.printf("%s = %.2f", entry.getKey(), entry.getValue()));
     }
 
     public static void task21() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+
+        students.stream()
+                .collect(Collectors.groupingBy(Student::getGroup, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .peek(entry -> System.out.println("Группа " + entry.getKey() + ": Количество студентов " + entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     public static void task22() {
         List<Student> students = Util.getStudents();
-//        students.stream() Продолжить ...
+
+        Map<String, Integer> minAgeByFaculty = students.stream()
+                .collect(Collectors.groupingBy(
+                        Student::getFaculty,
+                        Collectors.collectingAndThen(
+                                Collectors.minBy(Comparator.comparingInt(Student::getAge)),
+                                minStudent -> minStudent.map(Student::getAge).orElse(0)
+                        )
+                ));
+
+        minAgeByFaculty.forEach((faculty, minAge) -> {
+            System.out.println("Факультет " + faculty + ": Минимальный возраст - " + minAge);
+        });
     }
 }

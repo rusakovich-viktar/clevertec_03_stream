@@ -17,12 +17,12 @@ public class Car {
     private String color;
 
     /**
-     * Kilograms
+     * Kilograms.
      */
     private int mass;
 
     /**
-     * Dollars ($)
+     * Dollars ($).
      */
     private int price;
 }

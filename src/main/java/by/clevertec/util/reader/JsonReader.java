@@ -1,11 +1,10 @@
 package by.clevertec.util.reader;
 
-import by.clevertec.exception.IOFileException;
+import by.clevertec.exception.IoFileException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -22,7 +21,7 @@ public class JsonReader implements Reader {
             return newMapper().readValue(new File(fileName), typeReference);
 
         } catch (IOException e) {
-            throw new IOFileException(e.getMessage());
+            throw new IoFileException(e.getMessage());
         }
     }
 
